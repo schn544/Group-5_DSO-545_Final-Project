@@ -218,9 +218,6 @@ app.layout = html.Div([
                 html.Div([
                     html.P(['DSO 545 Project', html.Br(),'Matthew Lee, Vivian Kong, Sadman Rahi, Matthew Schneider, Edwin Wu'], style={'font-size':'12px'}),
                 ], style={'width':'60%'}), 
-                html.Div([
-                    html.P(['Sources ', html.Br(), html.A('Bureau of Transportation Statistics', href='https://www.bts.gov/content/passengers-boarded-top-50-us-airports', target='_blank'), ', ', html.A('Food and Agriculture Organization of the United Nations', href='http://www.fao.org/faostat/en/#data', target='_blank')], style={'font-size':'12px'})
-                ], style={'width':'37%'}),
             ], className = 'footer', style={'display':'flex'}),
         ], className='main'),
     ])
