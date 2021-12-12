@@ -20,6 +20,7 @@ import plotly.express as px # for interactive plotting
 import plotly.graph_objects as go # for interactive plotting
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import dash_table
 
 tsa = pd.read_csv('TSA Daily Data.csv', parse_dates=['Date'], index_col= 'Date')
 covidWeek = pd.read_csv('CovidCasesPerWeek.csv', parse_dates=['State'], index_col= 'State')
@@ -38,6 +39,7 @@ employment_start = pd.to_datetime('2019-01-01')
 employment_end= pd.to_datetime('2021-10-01') 
 employment=employment[employment_start:employment_end]
 box_data = pd.read_csv('airport_boxes_data.csv',index_col=0)
+df = pd.read_csv('tsa_daily_passengers.csv')
 
 radio_airport = dbc.RadioItems(
         id='airport', 
@@ -182,35 +184,56 @@ app.layout = html.Div([
 
             html.Div([
                 html.Div([
-                    html.Br(),
-                    html.Br(), 
-                    html.Br(), 
-                    html.Img(src=app.get_asset_url('Capture.png'), className = 'box', style = {'width':'95%'}),
-                ], className='box', style={'width': '63%'}), 
-                html.Div([
-                    html.Br(),
-                    html.Label('', style={'font-size':'9px'}),
-                    html.Br(), 
-                    html.Br(), 
-                    html.Img(src=app.get_asset_url('employment.png'), className = 'box', style = {'width':'95%'}),
-                ], className='box', style={'width': '63%'}), 
-                html.Div([
-                    html.Br(),
-                    html.Label('', style={'font-size':'9px'}),
-                    html.Br(), 
-                    html.Br(), 
-                    html.Img(src=app.get_asset_url('airfare.png'), className = 'box', style = {'width':'95%'}),
-                ], className='box', style={'width': '63%'}), 
-            ], className='row'),
+                    dbc.Label('Click a cell in the table:'),
+                    dash_table.DataTable(
+                        id='data_table',
+                        columns=[{"name": i, "id": i} for i in df.columns],
+                        data=df.to_dict('records'),
+                        style_cell={'padding': '0.5%'},
+                        style_header={
+                            'backgroundColor': 'white',
+                            'fontWeight': 'bold',
+                            'font-size': '22pt'},
+                        ),
+                    html.Div(id='output_div')
+                        ], className = 'box'),
+                ]),
+            # html.Div([
+            #     html.Div([
+            #         html.Br(),
+            #         html.Br(), 
+            #         html.Br(), 
+            #         html.Img(src=app.get_asset_url('Capture.png'), className = 'box', style = {'width':'95%'}),
+            #     ], className='box', style={'width': '63%'}), 
+            #     html.Div([
+            #         html.Br(),
+            #         html.Label('', style={'font-size':'9px'}),
+            #         html.Br(), 
+            #         html.Br(), 
+            #         html.Img(src=app.get_asset_url('employment.png'), className = 'box', style = {'width':'95%'}),
+            #     ], className='box', style={'width': '63%'}), 
+            #     html.Div([
+            #         html.Br(),
+            #         html.Label('', style={'font-size':'9px'}),
+            #         html.Br(), 
+            #         html.Br(), 
+            #         html.Img(src=app.get_asset_url('airfare.png'), className = 'box', style = {'width':'95%'}),
+            #     ], className='box', style={'width': '63%'}), 
+            # ], className='row'),
 
             html.Div([
                 html.Div([
-                    html.Label("Freshwater withdrawals per kg of product, in Liters", style={'font-size': '20px'}),
-                    html.Br(),
+                    html.Img(src=app.get_asset_url('boarding.png'), className = 'box', style = {'width':'93%'}),
+                ]),
+                html.Div([
+                    html.Label("Statistics for 5 Major US Airports", style={'font-size': '40px', 'font-weight':'bold'}),
+                    html.P('(LAX, JFK, ATL, ORD, DFW)', style={'font-size':'12px'}),
                     html.Label('', style={'font-size':'100px'}),
                     dcc.Graph(figure=fig_table)
                 ], className='box', style={'font-size':'100px', 'width': '63%'}), 
             ], className='row'),
+
+            
 
             ###############################################################################
 
@@ -223,6 +246,19 @@ app.layout = html.Div([
     ])
 
 #------------------------------------------------------ Callbacks ------------------------------------------------------
+@app.callback(
+    Output('output_div', 'children'),
+    Input('data_table', 'active_cell'),
+    State('data_table', 'data')
+)
+def getActiveCell(active_cell, data):
+    if active_cell:
+        col = active_cell['column_id']
+        row = active_cell['row']
+        cellData = data[row][col]
+        return html.P(f'row: {row}, col: {col}, value: {cellData}')
+
+
 @app.callback(
     Output('globe', 'figure'),
     Input('ani_veg', 'value'))
@@ -395,7 +431,7 @@ def VS_graphs(graph):
     if graph == 0:
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         fig.update_layout(
-            title=dict(text='Weekly Covid Case Count January 2019 - November 2021'),font=dict(size = 14))
+            title=dict(text='Weekly Covid Case Count February 2020 - November 2021'),font=dict(size = 14))
         fig.update_layout(paper_bgcolor="white", height =700 , width= 1000)
         fig.update_layout(plot_bgcolor='white')
         fig.add_trace(
