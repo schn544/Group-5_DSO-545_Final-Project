@@ -39,17 +39,6 @@ employment_end= pd.to_datetime('2021-10-01')
 employment=employment[employment_start:employment_end]
 box_data = pd.read_csv('airport_boxes_data.csv',index_col=0)
 
-emissions = pd.read_csv("emissions_with_origin.csv")
-productions = pd.read_csv("productions.csv")
-water = pd.read_csv("water_use.csv")
-global_emissions = pd.read_csv("Global_Emissions.csv")
-
-top10 = emissions.sort_values("Total_emissions")[-10:]
-top10_vegetal = emissions[emissions.Origin=='Vegetal'].sort_values("Total_emissions")[-10:]
-top8_animal = emissions[emissions.Origin=='Animal'].sort_values("Total_emissions")[-5:]
-
-
-
 radio_airport = dbc.RadioItems(
         id='airport', 
         className='box_comment',
@@ -59,57 +48,13 @@ radio_airport = dbc.RadioItems(
         style= {'font-size': '30pt', 'font-weight':'bold'}
     )
 
-dict_ = {'Apples':'Apples', 'Bananas':'Bananas', 'Barley':'Barley', 'Beet Sugar':'Sugar beet', 'Berries & Grapes':'Berries & Grapes', 'Brassicas':'Brassicas', 
-        'Cane Sugar':'Sugar cane', 'Cassava':'Cassava', 'Citrus Fruit':'Citrus', 'Coffee':'Coffee beans', 'Groundnuts':'Groundnuts','Maize':'Maize', 'Nuts':'Nuts', 
-        'Oatmeal':'Oats', 'Olive Oil':'Olives', 'Onions & Leeks':'Onions & Leeks','Palm Oil':'Oil palm fruit', 'Peas':'Peas', 'Potatoes':'Potatoes', 'Rapeseed Oil':'Rapeseed',
-        'Rice':'Rice', 'Root Vegetables':'Roots and tubers', 'Soymilk':'Soybeans', 'Sunflower Oil':'Sunflower seed', 'Tofu':'Soybeans','Tomatoes':'Tomatoes', 
-        'Wheat & Rye':'Wheat & Rye', 'Dark Chocolate':'Cocoa, beans', 'Milk': 'Milk', 'Eggs': 'Eggs','Poultry Meat': 'Poultry Meat', 'Pig Meat': 'Pig Meat', 
-        'Seafood (farmed)': 'Seafood (farmed)', 'Cheese': 'Cheese', 'Lamb & Mutton': 'Lamb & Mutton', 'Beef (beef herd)': 'Beef (beef herd)'}
-
-options_veg = [dict(label=key, value=dict_[key]) for key in top10_vegetal['Airport'].tolist()[::-1] if key in dict_.keys()]
-options_an = [dict(label=val, value=val) for val in top8_animal["Airport"].tolist()[::-1]]
-options_total = [dict(label=key, value=dict_[key]) for key in top10['Airport'].tolist()[::-1] if key in dict_.keys()]
-
-bar_colors = ['#ebb36a','#6dbf9c']
-bar_options = [top8_animal, top10_vegetal, top10]
-
-drop_map = dcc.Dropdown(
-        id = 'drop_map',
-        clearable=False,
-        searchable=False, 
-        style= {'margin': '4px', 'box-shadow': '0px 0px #ebb36a', 'border-color': '#ebb36a'}        
-    )
-
-drop_continent = dcc.Dropdown(
-        id = 'drop_continent',
-        clearable=False, 
-        searchable=False, 
-        options=[{'label': 'World', 'value': 'world'},
-                {'label': 'Europe', 'value': 'europe'},
-                {'label': 'Asia', 'value': 'asia'},
-                {'label': 'Africa', 'value': 'africa'},
-                {'label': 'North america', 'value': 'north america'},
-                {'label': 'South america', 'value': 'south america'}],
-        value='world', 
-        style= {'margin': '4px', 'box-shadow': '0px 0px #ebb36a', 'border-color': '#ebb36a'}
-    )
-
-slider_map = daq.Slider(
-        id = 'slider_map',
-        handleLabel={"showCurrentValue": True,"label": "Year"},
-        marks = {str(i):str(i) for i in [1990,1995,2000,2005,2010,2015]},
-        min = 1990,
-        size=450, 
-        color='#4B9072'
-    )
-
 fig_table = go.Figure(data=[go.Table(
   header=dict(
     values=['<b>STATE</b>','<b>AVERAGE AIRFARE</b>','<b>AVERAGE WEEKLY COVID CASE(S)<b>'],
     line_color='darkslategray',
     fill_color='black',
     align=['left','center'],
-    font=dict(color='white', size=14)
+    font=dict(color='white', size=20)
   ),
   cells=dict(
     values=[
@@ -120,7 +65,7 @@ fig_table = go.Figure(data=[go.Table(
     # 2-D list of colors for alternating rows
     fill_color = [['white','white','white', 'white','white']*5],
     align = ['left', 'center'],
-    font = dict(color = 'darkslategray', size = 12)
+    font = dict(color = 'darkslategray', size = 14),
     ))
 ])
 
@@ -231,9 +176,32 @@ app.layout = html.Div([
                 )
                 ], className = 'box', style = {'width':'55%'}),
                 html.Div([
-                    html.Img(src=app.get_asset_url('Capture.png'), className = 'box', style = {'width':'200%'}),
+                    html.Img(src=app.get_asset_url('flight.png'), className = 'box', style = {'width':'95%'}),
                 ]),
             ], className = 'row'),
+
+            html.Div([
+                html.Div([
+                    html.Br(),
+                    html.Br(), 
+                    html.Br(), 
+                    html.Img(src=app.get_asset_url('Capture.png'), className = 'box', style = {'width':'95%'}),
+                ], className='box', style={'width': '63%'}), 
+                html.Div([
+                    html.Br(),
+                    html.Label('', style={'font-size':'9px'}),
+                    html.Br(), 
+                    html.Br(), 
+                    html.Img(src=app.get_asset_url('employment.png'), className = 'box', style = {'width':'95%'}),
+                ], className='box', style={'width': '63%'}), 
+                html.Div([
+                    html.Br(),
+                    html.Label('', style={'font-size':'9px'}),
+                    html.Br(), 
+                    html.Br(), 
+                    html.Img(src=app.get_asset_url('airfare.png'), className = 'box', style = {'width':'95%'}),
+                ], className='box', style={'width': '63%'}), 
+            ], className='row'),
 
             html.Div([
                 html.Div([
@@ -241,7 +209,7 @@ app.layout = html.Div([
                     html.Br(),
                     html.Label('', style={'font-size':'100px'}),
                     dcc.Graph(figure=fig_table)
-                ], className='box', style={'width': '63%'}), 
+                ], className='box', style={'font-size':'100px', 'width': '63%'}), 
             ], className='row'),
 
             ###############################################################################
